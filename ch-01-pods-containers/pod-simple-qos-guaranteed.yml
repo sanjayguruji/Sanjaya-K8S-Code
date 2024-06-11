@@ -1,0 +1,46 @@
+# pod-simple-qos-burstable.yml
+#
+apiVersion: v1
+kind: Pod
+metadata:
+  name: Sanjaya-app
+  namespace: prod
+  labels:
+   app: Sanjaya-app
+spec:
+  containers:
+    - name: web-app
+      image: nginx
+      resources:
+        limits:
+          memory: "250Mi"
+          cpu: "400m"
+        requests:
+          memory: "250Mi"
+          cpu: "400m"
+#
+# Creating a simple pod. Which has apache
+# configured inside it. There are memory & cpu 
+# restrictions. But both are same so kubernetes 
+# cluster will guarantee that much of 
+# resources to the pod, before running it on any node.
+#
+# QoS = Guaranteed
+#
+# create namespace prd -
+# kubectl create namespace prod
+#
+# run the pod
+# kubectl create -f pod-simple-qos-guaranteed.yml
+#
+# check the pod
+# kubectl get pods --namespace=prod
+#
+# get details about pod
+# kubectl describe pod/Sanjaya-app --namespace=prod
+# 
+# Check the "QoS Class" value. 
+#
+# delete pod
+# kubectl delete pod/Sanjay-app --namespace=prod
+#

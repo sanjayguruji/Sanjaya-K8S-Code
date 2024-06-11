@@ -1,0 +1,49 @@
+# pod-simple-lifecycle-events.yml
+#
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sanjaya-app
+  namespace: prod
+  labels:
+   app: sanjaya-app
+spec:
+  containers:
+    - name: web-app
+      image: nginx
+      lifecycle:
+        postStart:
+          exec:
+            command: ["/bin/sh", "-c", "useradd jacksparrow -p redhat"]
+        preStop:
+          exec:
+            command: ["/bin/sh","-c","rm -rf /home/jacksparrow; userdel jacksparrow"]
+#
+# Creating a simple pod. Which has apache
+# configured inside it. The container inside the
+# pod has handlers for the postStart and preStop events.
+#
+# postStart - postStart event is called immediately 
+# after the Container is created 
+#
+# preStop - preStop event is called immediately
+# before the Container is terminated
+#
+# Create namespace prod -
+# kubectl create namespace prod
+#
+# Run the pod
+# kubectl create -f pod-simple-lifecycle-events.yml
+#
+# Check the pod
+# kubectl get pods --namespace=prod
+#
+# Go inside the pod to check user - jacksparrow
+# kubectl exec -it sanjaya-app --namespace=prod -- /bin/bash
+# 
+# Check inside /etc/passwd and you will find user - jacksparrow
+# tail /etc/passwd
+# 
+# Delete pod
+# kubectl delete pod/sanjaya-app --namespace=prod
+#

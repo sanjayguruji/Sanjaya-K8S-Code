@@ -1,0 +1,16 @@
+# pod-with-ports.yml
+apiVersion: v1
+
+kind: Pod
+
+metadata:
+  name: Sanjaya-app
+
+spec:
+  containers:
+    - name: Sanjaya-app
+      image: nginx
+      ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP

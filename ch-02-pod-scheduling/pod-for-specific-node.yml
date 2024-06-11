@@ -1,0 +1,43 @@
+# pod-for-specific-node.yml
+#
+apiVersion: v1
+kind: Pod
+metadata:
+  name: Sanjaya-app
+  namespace: prod
+  labels:
+   app: Sanjaya-app
+spec:
+  nodeName: nodeone.example.com #this will assign pod to specific node
+  containers:
+    - name: web-app
+      image: nginx
+      resources:
+        limits:
+          memory: "500Mi"
+        requests:
+          memory: "300Mi"
+
+
+#
+# We are scheduling our pod to run on a SPECIFIC
+# node - nodeone.example.com using
+# "nodeName" setting
+#
+# create namespace prod -
+# kubectl create namespace prod
+#
+# run the pod
+# kubectl create -f pod-for-specific-node.yml
+#
+# check the pod
+# kubectl get pods
+#
+# get details about pod
+# kubectl describe pod/Sanjaya-app --namespace=prod
+#
+# check for the node where its running
+#
+# delete pod
+# kubectl delete pod/Sanjaya-app --namespace=prod
+#

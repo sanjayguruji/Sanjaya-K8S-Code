@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: guaranteed
+  labels:
+    app: apache
+spec:
+  containers:
+    - name: Sanjaya-app
+      image: nginx
+      resources:
+        limits:
+          memory: 250Mi
+          cpu: 200m
+        requests:
+          memory: 250Mi
+          cpu: 200m

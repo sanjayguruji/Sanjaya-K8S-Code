@@ -1,0 +1,60 @@
+# pod-simple-with-health-check.yml
+#
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sanjaya-app
+  namespace: prod
+  labels:
+   app: sanjaya-app
+spec:
+  containers:
+    - name: web-app
+      image: nginx
+      args:
+        - /bin/sh
+        - -c
+        - touch /tmp/health.txt; sleep 30; rm -rf /tmp/health.txt; sleep 35
+      livenessProbe:
+        exec:
+          command:
+            - cat 
+            - /tmp/health.txt
+        initialDelaySeconds: 5
+        periodSeconds: 5
+        failureThreshold: 3
+      resources:
+        requests:
+          cpu: "400m"
+          memory: "128Mi"
+        limits:
+          cpu: "500m"
+          memory: "256Mi"
+      ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+ 
+#
+# Creating a simple pod with health checks.
+# "periodSeconds" - kubelet should perform a liveness probe every 5 seconds
+# "initialDelaySeconds" - kubelet should wait 5 seconds before performing 
+#  the first probe
+#
+# create namespace prod -
+# kubectl create namespace prod
+#
+# run the pod
+# kubectl create -f pod-simple-with-health-check.yml
+#
+# check the pod
+# kubectl get pods --namespace=prod
+#
+# get details about pod
+# kubectl describe pod/sanjaya-app --namespace=prod
+# 
+# observe that there is no pod restart within first 30s
+#
+# delete pod
+# kubectl delete pod/sanjaya-app --namespace=prod
+#

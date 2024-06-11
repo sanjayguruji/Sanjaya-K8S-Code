@@ -1,0 +1,156 @@
+#### STARTUP PROBE - SUCCESS
+apiVersion: v1
+kind: Pod
+metadata:
+  name: startup-probe-demo
+spec:
+  containers:
+  - name: startup-probe-demo
+    image: busybox:latest
+    args:
+    - /bin/sh
+    - -c
+    - sleep 300
+    startupProbe:
+      exec:
+        command:
+        - cat
+        - /etc/hostname
+      periodSeconds: 10
+      failureThreshold: 3
+
+    
+#####
+check with describe pod .. it will be a success
+#####
+    
+#### STARTUP PROBE - FAILURE
+apiVersion: v1
+kind: Pod
+metadata:
+  name: startup-probe-demo
+spec:
+  containers:
+  - name: startup-probe-demo
+    image: busybox:latest
+    args:
+    - /bin/sh
+    - -c
+    - sleep 300
+    startupProbe:
+      exec:
+        command:
+        - cat
+        - /etc/hostnamee
+      periodSeconds: 10
+      failureThreshold: 3
+
+ ####
+ check with describe pod - it will fail and container will be restarted
+ ####
+ 
+#### READINESS PROBE
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: readiness
+  labels:
+    app: readiness
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: readiness
+  template:
+    metadata:
+      labels:
+        app: readiness
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+        startupProbe:
+          exec:
+            command:
+            - cat
+            - /var/www/html/index.html
+          periodSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command:
+            - cat
+            - /var/www/html/index.html
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 4
+          failureThreshold: 2
+          successThreshold: 1
+
+### do create a service for this deployment. 
+### now go inside a pod and delete index.html file
+### after readiness probe fails, kubernetes
+### will remove that pod's IP from service endpoint
+
+ 
+#### LIVENESS PROBE
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: liveness
+  labels:
+    app: readiness
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: readiness
+  template:
+    metadata:
+      labels:
+        app: readiness
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+        startupProbe:
+          exec:
+            command:
+            - cat
+            - /var/www/html/index.html
+          periodSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command:
+            - cat
+            - /var/www/html/index.html
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 4
+          failureThreshold: 2
+          successThreshold: 1
+        livenessProbe:
+          exec:
+            command:
+            - cat
+            - /var/www/html/index.html
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 4
+          failureThreshold: 6
+          successThreshold: 1
+ 
+### do create a service for this deployment. 
+### now go inside a pod and delete index.html file
+### after readiness probe fails, kubernetes
+### will remove that pod's IP from service endpoint
+### after liveness probe fails, kubernetes
+### will restart the pod to solve the problem
+
+
+

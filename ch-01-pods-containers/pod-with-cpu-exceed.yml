@@ -1,0 +1,40 @@
+# pod-with-cpu-exceed.yml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: Sanjaya-app
+  namespace: prod
+  labels:
+   app: Sanjaya-app
+spec:
+  containers:
+    - name: web-app
+      image: nginx
+      resources:
+        limits:
+          cpu: "4"
+        requests:
+          cpu: "4"
+
+
+#
+# the pod wants 4 cpu's which is not available
+# on any node in the cluster. So it should fail
+# with "insufficient cpu" message.
+#
+# create namespace prod -
+# kubectl create namespace prod
+#
+# run the pod
+# kubectl create -f pod-with-cpu-exceed.yml
+#
+# check the pod
+# kubectl get pods
+#
+# get details about pod
+# kubectl describe pod/Sanjaya-app --namespace=prod
+#
+# delete pod
+# kubectl delete pod/Sanjaya-app --namespace=prod
+#

@@ -1,0 +1,39 @@
+# pod-simple-qos-besteffort.yml
+#
+apiVersion: v1
+kind: Pod
+metadata:
+  name: Sanjaya-app
+  namespace: Dev
+  labels:
+   app: Sanjaya-app
+spec:
+  containers:
+    - name: web-app
+      image: nginx
+#
+# Creating a simple pod. Which has apache
+# configured inside it. There are no cpu or
+# memory limits applied on pod. So kubernetes
+# cluster will try to give the best resources
+# available. But cannot guarantee any number.
+#
+# QoS = Best Effort 
+#
+# create namespace Dev -
+# kubectl create namespace Dev
+#
+# run the pod
+# kubectl create -f pod-simple-qos-besteffort.yml
+#
+# check the pod
+# kubectl get pods --namespace=Dev
+#
+# get details about pod
+# kubectl describe pod/Sanjaya-app --namespace=Dev
+# 
+# Check the "QoS Class" value. 
+#
+# delete pod
+# kubectl delete pod/Sanjaya-app --namespace=Dev
+#

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: Sanjaya-app
+  labels:
+   app: Sanjaya-app
+spec:
+  containers:
+    - name: web-app
+      image: nginx
+      resources:
+        limits:
+          cpu: "10"
+        requests:
+          cpu: "10"
+          
+#pod must be in running state

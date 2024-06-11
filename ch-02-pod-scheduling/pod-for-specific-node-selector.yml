@@ -1,0 +1,60 @@
+# pod-for-specific-node-selector.yml
+#
+apiVersion: v1
+kind: Pod
+metadata:
+  name: Sanjaya-app
+  namespace: prod
+  labels:
+   app: Sanjaya-app
+spec:
+  containers:
+    - name: web-app
+      image: nginx
+      resources:
+        limits:
+          memory: "500Mi"
+        requests:
+          memory: "300Mi"
+  nodeSelector:
+        sku: small 
+
+#
+# First label one/more nodes with some kind of tag
+# we are classifying our nodes as small, medium &
+# heavy and the label name is "sku" value can be
+# "small / medium / heavy"
+#
+# First label nodeone.example.com as small:
+#
+# kubectl label nodes nodeone.example.com sku=small
+#
+# Confirm for the labels on nodes using:
+#
+# kubectl get nodes --show-labels 
+#
+# create namespace prod -
+# kubectl create namespace prod
+#
+# run the pod
+# kubectl create -f pod-for-specific-node-selector.yml
+#
+# check the pod
+# kubectl get pods --namespace=prod --output=wide
+#
+# get details about pod
+# kubectl describe pod/Sanjaya-app --namespace=prod
+#
+# check for the node where its running
+# 
+# Also look for: 
+# Node-Selectors:  sku=small 
+#
+# value in the kubectl describe output
+#
+# delete pod
+# kubectl delete pod/Sanjaya-app --namespace=prod
+#
+# delete the label from nodeone.example.com
+# kubectl label node nodeone.example.com sku-
+#

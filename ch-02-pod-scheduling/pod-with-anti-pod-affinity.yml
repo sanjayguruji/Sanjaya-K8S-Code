@@ -1,0 +1,64 @@
+# pod-with-anti-pod-affinity.yml
+#
+# 
+# First create a pod (test-web) using
+# kubectl create -f pod-for-anti-affinity.yml
+#
+# Check the node where its running.
+#
+# Now we want this pod NEVER to be deployed on 
+# same node, where "test-web" pod is running
+#
+apiVersion: v1
+kind: Pod
+metadata:
+  name: Sanjaya-app
+  namespace: prod
+  labels:
+   app: Sanjaya-app
+spec:
+  containers:
+    - name: web-app
+      image: nginx
+      resources:
+        limits:
+          memory: "500Mi"
+        requests:
+          memory: "300Mi"
+  affinity:
+#    podAntiAffinity:
+    podAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - nnweb
+        topologyKey: "kubernetes.io/hostname"
+
+
+#
+# create namespace prod -
+# kubectl create namespace prod
+#
+# run the pod
+# kubectl create -f pod-with-anti-pod-affinity.yml
+#
+# check the pod
+# kubectl get pods --namespace=prod --output=wide
+#
+# get details about pod
+# kubectl describe pod/Sanjaya-app --namespace=prod
+#
+# get details of all the pods
+# kubectl get pods -o wide --namespace=prod
+#
+# check that both the pods will be running on different nodes
+# and nnappone pod will never be deployed on same node where
+# nnweb pod is running
+# 
+# delete pod
+# kubectl delete pod Sanjaya-app --namespace=prod
+# kubectl delete pod test-web --namespace=prod
+#

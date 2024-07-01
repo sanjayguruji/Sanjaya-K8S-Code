@@ -42,7 +42,7 @@ EOF
      systemctl enable --now kubelet
      systemctl start kubelet
      kubeadm config images pull
-     kubeadm init
+     kubeadm init --ignore-preflight-errors=all
      sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
     sudo chown $(id -u):$(id -g) $HOME/.kube/config
     kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.0/manifests/calico.yaml

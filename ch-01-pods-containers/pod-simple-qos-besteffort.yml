@@ -3,10 +3,10 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: Sanjaya-app
-  namespace: Dev
+  name: sanjaya-app
+  namespace: dev
   labels:
-   app: Sanjaya-app
+   app: sanjaya-app
 spec:
   containers:
     - name: web-app
@@ -21,19 +21,19 @@ spec:
 # QoS = Best Effort 
 #
 # create namespace Dev -
-# kubectl create namespace Dev
+# kubectl create namespace dev
 #
 # run the pod
 # kubectl create -f pod-simple-qos-besteffort.yml
 #
 # check the pod
-# kubectl get pods --namespace=Dev
+# kubectl get pods --namespace=dev
 #
 # get details about pod
-# kubectl describe pod/Sanjaya-app --namespace=Dev
+# kubectl describe pod/Sanjaya-app --namespace=dev
 # 
 # Check the "QoS Class" value. 
 #
 # delete pod
-# kubectl delete pod/Sanjaya-app --namespace=Dev
+# kubectl delete pod/Sanjaya-app --namespace=dev
 #

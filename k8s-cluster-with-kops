@@ -2,18 +2,23 @@ Setup Kubernetes (K8s) Cluster on AWS
 Create Ubuntu EC2 instance
 
 install AWSCLI
+apt install unzip -y
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
 
- curl https://s3.amazonaws.com/aws-cli/awscli-bundle.zip -o awscli-bundle.zip
- apt install unzip python
- unzip awscli-bundle.zip
- #sudo apt-get install unzip - if you dont have unzip in your system
- ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+
 Install kubectl
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+kubectl version --client
 
-curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
- chmod +x ./kubectl
- sudo mv ./kubectl /usr/local/bin/kubectl
- sudo mv /usr/local/bin/kubectl /bin
+INstall kops
+
+curl -Lo kops https://github.com/kubernetes/kops/releases/download/$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f 4)/kops-linux-amd64
+chmod +x ./kops
+sudo mv ./kops /usr/local/bin/
+
 Create an IAM user/role with Route53, EC2, IAM and S3 full access
 
 Attach IAM role to ubuntu server

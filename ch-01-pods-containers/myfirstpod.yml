@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: Snjaya-app
+  name: sanjaya-app
   labels:
-   app: Sanjaya-app
+   app: sanjaya-app
 spec:
   containers:
     - name: web-app

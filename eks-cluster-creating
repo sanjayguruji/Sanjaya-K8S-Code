@@ -15,7 +15,24 @@ host EKS CLUSTER
  curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
  kubectl version --client
  Create EKS Cluster
- eksctl create cluster --name my-cluster --region region-code --version 1.29 --vpc-private-subnets subnet-ExampleID1,subnet-ExampleID2 --without-nodegroup
+ eksctl create cluster --name my-cluster --region region-code --version 1.29 --vpc-public-subnets subnet-ExampleID1,subnet-ExampleID2 --without-nodegroup
+
+ ##Create a Node Group
+ eksctl create nodegroup \
+  --cluster my-cluster \
+  --region us-east-2 \
+  --name my-node-group \
+  --node-ami-family Ubuntu2004 \
+  --node-type t2.small \
+  --subnet-ids subnet-086ced1a84c94a342,subnet-01695faa5e0e61d97 \
+  --nodes 3 \
+  --nodes-min 2 \
+  --nodes-max 4 \
+  --ssh-access \
+  --ssh-public-key /root/.ssh/id_rsa.pub
+
+
+
 
  When You want to delete cluster
  eksctl delete cluster --name my-cluster

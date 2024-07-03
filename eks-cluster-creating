@@ -1,6 +1,6 @@
 host EKS CLUSTER 
  create iam role and attach policy
- ECRfull access,EKSpolict and IAM full access
+ ECRfull access,EKSpolicy and IAM full access
  apt-get update -y
  apt install unzip -y
  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"

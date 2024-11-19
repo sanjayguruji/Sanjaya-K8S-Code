@@ -1,0 +1,158 @@
+Host Kubernetes cluster using Docker container as a run time with Redhat Linux 9/CentOS 9
+Step 1  Install Kernel Headers
+First, ensure that you have the appropriate kernel headers installed on your system (on each node). You can install them using the following command:
+#sudo dnf install kernel-devel-$(uname -r)
+
+Step 2: Add Kernel Modules
+To load the necessary kernel modules required by Kubernetes, you can use the modprobe command followed by the module names (on each node). Here’s how you can do it:
+
+sudo modprobe br_netfilter
+sudo modprobe ip_vs
+sudo modprobe ip_vs_rr
+sudo modprobe ip_vs_wrr
+sudo modprobe ip_vs_sh
+sudo modprobe overlay
+
+Next, create a configuration file (as the root user on each node) to ensure these modules load at system boot:
+cat > /etc/modules-load.d/kubernetes.conf << EOF
+br_netfilter
+ip_vs
+ip_vs_rr
+ip_vs_wrr
+ip_vs_sh
+overlay
+EOF
+
+Step 3: Configure Sysctl
+To set specific sysctl settings (on each node) that Kubernetes relies on, you can update the system’s kernel parameters. These settings ensure optimal performance and compatibility for Kubernetes. Here’s how you can configure the necessary sysctl settings:
+
+cat > /etc/sysctl.d/kubernetes.conf << EOF
+net.ipv4.ip_forward = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+EOF
+
+These commands adjust the following kernel parameters:
+
+Kernel Parameter	Description
+net.bridge.bridge-nf-call-iptables	Enables iptables to process bridged IPv4 traffic.
+net.bridge.bridge-nf-call-ip6tables	Enables iptables to process bridged IPv6 traffic.
+net.ipv4.ip_forward	Enables IPv4 packet forwarding.
+
+By setting these sysctl parameters, you ensure that your system is properly configured to support Kubernetes networking requirements and forwarding of network traffic within the cluster. These settings are essential for the smooth operation of Kubernetes networking components. Run the following command to apply the changes:
+
+#sysctl --system
+
+Step 4: Disabling Swap
+To disable swap on each server in your Kubernetes cluster, you can follow these steps:
+# sudo swapoff -a
+# sed -e '/swap/s/^/#/g' -i /etc/fstab
+
+Step 5 Add the Docker CE Repository
+Before proceeding with the installation of Containerd, we first need to add the Docker Community Edition (CE) repository to our system. Docker CE is the free version of Docker, offering essential components for container management. Adding this repository ensures we have access to the latest Docker CE packages for installation.
+# sudo dnf -y install dnf-plugins-core
+# sudo dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+Install Docker Engine
+
+# sudo dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+Update Package Cache
+
+# sudo dnf makecache
+
+Configure Containerd
+
+After installing Containerd, the next step is to configure it to ensure optimal performance and compatibility with your environment. The configuration file for Containerd is located at /etc/containerd/config.toml. While the default configuration provides a solid starting point for most environments, we’ll make a small adjustment to enable Systemd Cgroup support, which is essential for proper container management. Let’s proceed with configuring Containerd:
+
+# cat /etc/containerd/config.toml
+
+Run the following command to build out the containerd configuration file:
+
+# sudo sh -c "containerd config default > /etc/containerd/config.toml" ; cat /etc/containerd/config.toml
+
+Using your preferred text editor, open the /etc/containerd/config.toml file and set the SystemdCgroup variable to true (SystemdCgroup = true):
+
+sudo vim /etc/containerd/config.toml (open this file)
+
+and paste this content in to bottom of this file.
+##
+SystemdCgroup = true
+
+his configuration change enables Systemd Cgroup support in Containerd, ensuring compatibility with Systemd-managed containers.
+
+Once you’ve made these adjustments, Containerd will be configured with Systemd Cgroup support, providing enhanced compatibility for managing containers within a Systemd environment.
+
+Save and exit the file. Then, run the following command to ensure the containerd.service starts up and is enabled to autostart on boot up.
+
+#sudo systemctl enable --now containerd.service
+
+# sudo systemctl reboot
+
+# sudo systemctl status containerd.service
+
+Step 6: Set Firewall Rules
+To allow specific ports used by Kubernetes components through the firewall, you can execute the following commands (on each node): (optional)
+
+sudo firewall-cmd --zone=public --permanent --add-port=6443/tcp
+sudo firewall-cmd --zone=public --permanent --add-port=2379-2380/tcp
+sudo firewall-cmd --zone=public --permanent --add-port=10250/tcp
+sudo firewall-cmd --zone=public --permanent --add-port=10251/tcp
+sudo firewall-cmd --zone=public --permanent --add-port=10252/tcp
+sudo firewall-cmd --zone=public --permanent --add-port=10255/tcp
+sudo firewall-cmd --zone=public --permanent --add-port=5473/tcp
+
+Step 7: Install Kubernetes Components
+To install Kubernetes components (kubelet, kubeadm, and kubectl) and add the Kubernetes repository to your package manager, you can follow these steps:
+
+Add Kubernetes Repository
+First, add the Kubernetes repository (as the root user) to your package manager. For example, on RHEL/CentOS version 8+, you can use the following command:
+
+cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://pkgs.k8s.io/core:/stable:/v1.30/rpm/
+enabled=1
+gpgcheck=1
+gpgkey=https://pkgs.k8s.io/core:/stable:/v1.30/rpm/repodata/repomd.xml.key
+exclude=kubelet kubeadm kubectl cri-tools kubernetes-cni
+EOF
+
+# sudo yum install -y kubelet kubeadm kubectl --disableexcludes=Kubernetes
+
+# sudo systemctl enable --now kubelet
+
+Step 8: Initializing Kubernetes Control Plane
+Great! Let’s proceed with initializing the Kubernetes control plane on the master node. Here’s how we can do it:
+
+sudo kubeadm config images pull
+
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+
+Your Kubernetes control-plane has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+Set Up kubeconfig File
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+Alternatively, if you are the root user, you can run:
+
+  export KUBECONFIG=/etc/kubernetes/admin.conf
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 192.168.1.26:6443 --token y8cow4.jib2syhyrb0bh1dt \
+	--discovery-token-ca-cert-hash sha256:cb67fddec41469cf1f495db34008ae1a41d3f24ce418b46d5aefb262a1721f43
+
+Network Plugin = calico (Configure pod Network)
+kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.0/manifests/calico.yaml
+
+kubeadm token create --print-join-command

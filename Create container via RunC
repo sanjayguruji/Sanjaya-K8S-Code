@@ -1,0 +1,18 @@
+   Create container via RunC Here container run time is Container-d
+   ######################################################
+   ctr
+   ctr image pull docker.io/library/nginx:latest
+   ctr image ls
+   ctr container create docker.io/library nginx:latest nginx
+   ctr container create docker.io/library/nginx:latest nginx
+   mkdir nginx-rootfs
+   cd nginx-rootfs/
+   cd
+   runc spec
+   ctr snapshot mount /root/nginx-rootfs/ nginx | bash
+   cd nginx-rootfs/
+   vim config.json
+   "root" {
+            "path": "/root/nginx-rootfs",
+   :wq
+   runc run sanjaya

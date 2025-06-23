@@ -1,4 +1,6 @@
-host EKS CLUSTER 
+#################################################################################################################
+Host EKS CLUSTER via EKSCTL
+#################################################################################################################
  create iam role and attach policy
  ECRfull access,EKSpolicy and IAM full access
  apt-get update -y
@@ -16,14 +18,15 @@ host EKS CLUSTER
  sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl 
  kubectl version --client
  Create EKS Cluster
- eksctl create cluster --name my-cluster --region region-code --version 1.29 --vpc-public-subnets subnet-ExampleID1,subnet-ExampleID2 --without-nodegroup
+ eksctl create cluster --name my-cluster --region region-code --version 1.32 --vpc-public-subnets subnet-ExampleID1,subnet-ExampleID2 --without-nodegroup
 
- ##Create a Node Group
+ ##Create a Node Group##
+##############################################################################################################################
  eksctl create nodegroup \
   --cluster my-cluster \
   --region us-east-2 \
   --name my-node-group \
-  --node-ami-family Ubuntu2004 \
+  --node-ami-family Ubuntu2204 \
   --node-type t2.small \
   --subnet-ids subnet-086ced1a84c94a342,subnet-01695faa5e0e61d97 \
   --nodes 3 \

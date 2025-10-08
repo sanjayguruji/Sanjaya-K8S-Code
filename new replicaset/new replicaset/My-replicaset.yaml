@@ -1,0 +1,21 @@
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: devops-rs
+  labels:
+    app: devops-rs
+    tier: prod
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      tier: prod
+  template:
+    metadata:
+      labels:
+        tier: prod
+    spec:
+      containers:
+       - name: web-apache
+         image: nginx 

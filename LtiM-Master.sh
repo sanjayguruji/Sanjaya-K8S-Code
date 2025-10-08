@@ -1,7 +1,7 @@
 #!/bin/bash
 
 swapon -s
-     cat <<EOF | sudo tee /etc/modules-load.d/crio.conf
+cat <<EOF | sudo tee /etc/modules-load.d/crio.conf
 overlay
 br_netfilter
 EOF
@@ -33,10 +33,10 @@ net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
 EOF
 
-     echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+     echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
      curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
      apt-get update
-     apt-get install -y kubelet="1.28.0-*" kubectl="1.28.0-*" kubeadm="1.28.0-*"
+     apt-get install -y kubelet="1.32.0-*" kubectl="1.32.0-*" kubeadm="1.32.0-*"
      apt-get update -y
      apt-get install -y jq
      systemctl enable --now kubelet

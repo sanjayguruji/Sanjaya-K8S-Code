@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dev-en
+
+spec:
+  containers:
+  - name: dev-env
+    image: vish/stress
+    resources:
+      requests:
+        cpu: "0.2"
+      limits:
+        cpu: "0.4"     
